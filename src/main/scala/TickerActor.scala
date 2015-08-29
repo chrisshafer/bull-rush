@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 
 import scala.util.{Failure, Success}
 
-class TickerActor extends Actor{
+class TickerActor(router: ActorRef) extends Actor{
 
   import context._
 
@@ -48,18 +48,21 @@ class TickerActor extends Actor{
     if(tickers.length > 1) {
       YahooFinanceClient.retrieveQuotes(tickers) onComplete {
         case Success(res) =>
-          self ! SetTickerDetails(res)
+          self ! SetTickerDetails(res.map(_.toTickerDetails))
         case Failure(err) =>
           println(err.getMessage)
       }
     }else if(tickers.length == 1){
       YahooFinanceClient.retrieveQuote(tickers.head) onComplete {
         case Success(res) =>
-          self ! SetTickerDetails(Seq(res))
+          self ! SetTickerDetails(Seq(res.toTickerDetails))
         case Failure(err) =>
           println(err.getMessage)
       }
     }
+
+    println(tickers.length)
+    router ! tickerDetails.values.toList
 
     context.system.scheduler.scheduleOnce(1 second) {
       self ! UpdateTickers
@@ -74,8 +77,8 @@ object TickerActor {
   case class SetTickerDetails(tickerDetails: Seq[TickerDetails])
   case object UpdateTickers
 
-  def props: Props = {
-    Props(new TickerActor())
+  def props(router: ActorRef): Props = {
+    Props(new TickerActor(router))
   }
 }
 

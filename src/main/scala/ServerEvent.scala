@@ -1,4 +1,5 @@
 import TickerActor._
+import RouterActor.SendStats
 import akka.actor.{Props, ActorRef, Actor}
 import akka.routing.{ActorRefRoutee, RemoveRoutee, AddRoutee, Routee}
 import akka.stream.actor.ActorPublisher
@@ -9,10 +10,10 @@ import spray.json.DefaultJsonProtocol._
 import spray.json._
 import scala.concurrent.duration._
 
-case object SendStats
 class RouterActor extends Actor {
 
   private var clients = Set[Routee]()
+  import SymbolJsonProtocol._
 
   def receive = {
     case ar: AddRoutee =>
@@ -26,10 +27,20 @@ class RouterActor extends Actor {
     case msg: SocketEvent =>
       clients.foreach(_.send(msg.toJson.toString() ,sender))
 
+    case tickers: Seq[TickerDetails] =>
+      clients.foreach(_.send(tickers.toJson.toString(), sender))
+
     case SendStats =>
       clients.foreach(_.send(SocketEvent(clients.size.toString,"SERVER",2).toJson.toString(),sender))
 
     case msg => clients.foreach(_.send(msg, sender))
+  }
+}
+object RouterActor{
+  case object SendStats
+
+  def props: Props = {
+    Props(new RouterActor())
   }
 }
 class RouterPublisher(router: ActorRef) extends ActorPublisher[String] {

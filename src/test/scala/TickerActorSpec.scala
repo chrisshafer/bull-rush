@@ -1,5 +1,5 @@
 import TickerActor.{GetTicker, AddTicker}
-import akka.actor.{ActorSystem, ActorRef}
+import akka.actor.{Props, ActorSystem, ActorRef}
 import akka.util.Timeout
 import org.scalatest.concurrent.{ScalaFutures, Eventually}
 import org.scalatest.time.{Seconds, Span}
@@ -24,7 +24,9 @@ class TickerActorSpec extends FunSpec with ShouldMatchers with Eventually with S
   implicit val system = ActorSystem("awsPricingClientSpec")
   implicit val defaultPatience =
     PatienceConfig(timeout =  Span(5, Seconds), interval = Span(1, Seconds))
-  val tickerActor : ActorRef = system.actorOf(TickerActor.props)
+
+  val router = system.actorOf(Props[RouterActor], "router")
+  val tickerActor : ActorRef = system.actorOf(TickerActor.props(router))
 
   describe("The Ticker Actor"){
     tickerActor ! AddTicker(stockTicker)

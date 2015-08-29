@@ -1,6 +1,8 @@
 
 import java.util.concurrent.TimeoutException
 
+import TickerActor.AddTicker
+import RouterActor.SendStats
 import akka.actor.{ActorRef, Props, ActorSystem}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
@@ -42,6 +44,7 @@ object ChatServer extends App {
   import system.dispatcher
 
   val router = system.actorOf(Props[RouterActor], "router")
+  val tickerActor : ActorRef = system.actorOf(TickerActor.props(router))
 
   val binding = Http().bindAndHandleSync({
 
@@ -57,14 +60,11 @@ object ChatServer extends App {
 
       val source = Source.actorPublisher[String](Props(classOf[RouterPublisher],router))
       val merge = b.add(Merge[String](2))
-      var user = ""
 
       val validOrInvalid = b.add(Flow[SocketEvent].map{
-        case broadcast: SocketEvent if user != "" =>
-          router ! SocketEvent(broadcast.message,user)
-          SocketEvent("Message Sent","SERVER",200).toJson.toString()
-        case register: SocketEvent if user == "" && register.code == 3 =>
-          user = register.message
+
+        case register: SocketEvent if register.code == 201 =>
+          tickerActor ! AddTicker(register.message)
           SocketEvent("Subscribed to : "+register.message,"SERVER",201).toJson.toString()
         case _ =>
           SocketEvent("Invalid Message","SERVER",500).toJson.toString()
@@ -80,7 +80,7 @@ object ChatServer extends App {
       val broadcasted = b.add(source)
 
       mapMsgToIncomingMessage ~> validOrInvalid ~> merge
-      broadcasted ~> merge ~> mapStringToMsg
+                                    broadcasted ~> merge ~> mapStringToMsg
 
       (mapMsgToIncomingMessage.inlet, mapStringToMsg.outlet)
     }

@@ -18,8 +18,8 @@ object YahooFinanceClient {
   import system.dispatcher // execution context for futures
   import SymbolJsonProtocol._
 
-  val singleTickerPipe: HttpRequest => Future[TickerDetails] = sendReceive ~> unmarshal[TickerDetails]
-  val multiTickerPipe: HttpRequest => Future[Seq[TickerDetails]] = sendReceive ~> unmarshal[Seq[TickerDetails]]
+  val singleTickerPipe: HttpRequest => Future[YahooTickerDetails] = sendReceive ~> unmarshal[YahooTickerDetails]
+  val multiTickerPipe: HttpRequest => Future[Seq[YahooTickerDetails]] = sendReceive ~> unmarshal[Seq[YahooTickerDetails]]
 
 
   val BASE_URL = "http://query.yahooapis.com/v1/public"
@@ -35,10 +35,10 @@ object YahooFinanceClient {
   def symbolURL(ticker: String) = BASE_URL+"/yql?q="+symbolYQL(ticker)+"&format="+format+"&env="+env
   def symbolsURL(tickers: Seq[String]) = BASE_URL+"/yql?q="+symbolsYQL(tickers)+"&format="+format+"&env="+env
 
-  def retrieveQuote(ticker: String):Future[TickerDetails] =
+  def retrieveQuote(ticker: String):Future[YahooTickerDetails] =
     singleTickerPipe(Get(symbolURL(ticker)))
 
-  def retrieveQuotes(tickers: Seq[String]):Future[Seq[TickerDetails]] =
+  def retrieveQuotes(tickers: Seq[String]):Future[Seq[YahooTickerDetails]] =
     multiTickerPipe(Get(symbolsURL(tickers)))
 
 
