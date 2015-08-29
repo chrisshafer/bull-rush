@@ -1,4 +1,5 @@
-import akka.actor.{ActorRef, Actor}
+import TickerActor._
+import akka.actor.{Props, ActorRef, Actor}
 import akka.routing.{ActorRefRoutee, RemoveRoutee, AddRoutee, Routee}
 import akka.stream.actor.ActorPublisher
 
@@ -8,105 +9,73 @@ import spray.json.DefaultJsonProtocol._
 import spray.json._
 import scala.concurrent.duration._
 
-
 import scala.util.{Failure, Success}
 
 class TickerActor extends Actor{
 
   import context._
 
-
-  case class AddTicker(ticker: String)
-  case class GetTicker(ticker: String)
-  case class SetPrices(tickerDetails: Seq[TickerDetails])
-  case object UpdateTickers
   private var tickers: Seq[String] = Seq()
   private val tickerDetails: scala.collection.mutable.Map[String,TickerDetails] = scala.collection.mutable.Map()
-
-  def updateTickerDetails(): Unit ={
-    YahooFinanceClient.retrieveQuotes(tickers) onComplete {
-      case Success(res) =>
-        self ! SetPrices(res)
-        context.system.scheduler.scheduleOnce(1 hour){
-          self ! UpdateTickers
-        }
-      case Failure(err) =>
-        context.system.scheduler.scheduleOnce(1 second){
-          self ! UpdateTickers
-        }
-    }
-  }
 
   def receive = {
     case AddTicker(ticker) =>
       tickers = tickers :+ ticker
+
     case GetTicker(ticker) =>
-      sender ! tickerDetails.get(ticker)
-    case SetPrices(tickers) =>
-      tickers.foreach( ticker => tickerDetails - ticker.symbol)
+      if(tickerDetails.contains(ticker)) {
+        sender ! tickerDetails(ticker)
+      } else sender ! new RuntimeException("Ticker not populated yed")
+
+    case SetTickerDetails(deets) =>
+      deets.foreach( deet => updateTicker(deet))
+
     case UpdateTickers =>
       updateTickerDetails()
   }
-}
 
-case object SendStats
-class RouterActor extends Actor {
-
-  private var clients = Set[Routee]()
-
-  def receive = {
-    case ar: AddRoutee =>
-      println("Adding Routee")
-      clients = clients + ar.routee
-    case rr: RemoveRoutee =>
-      println("Removing Routee")
-      clients = clients - rr.routee
-    case msg: SocketEvent =>
-      clients.foreach(_.send(msg.toJson.toString() ,sender))
-    case SendStats =>
-      clients.foreach(_.send(SocketEvent(clients.size.toString,"SERVER",2).toJson.toString(),sender))
-    case msg => clients.foreach(_.send(msg, sender))
-  }
-}
-class RouterPublisher(router: ActorRef) extends ActorPublisher[String] {
-
-  case object QueueUpdated
-
-  import akka.stream.actor.ActorPublisherMessage._
-  import scala.collection.mutable
-
-  private val queue = mutable.Queue[String]()
-  val MaxBufferSize = 100
-  var queueUpdated = false
-
-  override def preStart(): Unit = router ! AddRoutee(ActorRefRoutee(self))
-  override def postStop(): Unit = router ! RemoveRoutee(ActorRefRoutee(self))
-
-  def receive = {
-
-    case message: String  =>
-      if (queue.size == MaxBufferSize) {
-        queue.dequeue()
-        println("Oh noes ! Buffer full !")
-      }
-      queue += message
-      if (!queueUpdated) {
-        queueUpdated = true
-        self ! QueueUpdated
-      }
-    case QueueUpdated => deliver()
-
-    case Cancel => context.stop(self)
+  @scala.throws[Exception](classOf[Exception])
+  override def preStart(): Unit = {
+    updateTickerDetails()
+    super.preStart()
   }
 
-  @tailrec
-  final def deliver(): Unit = {
+  def updateTicker(detail: TickerDetails): Unit = {
+    tickerDetails(detail.symbol) = detail
+  }
 
-    if (queue.size == 0 && totalDemand != 0) {
-      queueUpdated = false
-    } else if (totalDemand > 0 && queue.size > 0) {
-      onNext(queue.dequeue())
-      deliver()
+  def updateTickerDetails(): Unit ={
+    if(tickers.length > 1) {
+      YahooFinanceClient.retrieveQuotes(tickers) onComplete {
+        case Success(res) =>
+          self ! SetTickerDetails(res)
+        case Failure(err) =>
+          println(err.getMessage)
+      }
+    }else if(tickers.length == 1){
+      YahooFinanceClient.retrieveQuote(tickers.head) onComplete {
+        case Success(res) =>
+          self ! SetTickerDetails(Seq(res))
+        case Failure(err) =>
+          println(err.getMessage)
+      }
+    }
+
+    context.system.scheduler.scheduleOnce(1 second) {
+      self ! UpdateTickers
     }
   }
+
 }
+
+object TickerActor {
+  case class AddTicker(ticker: String)
+  case class GetTicker(ticker: String)
+  case class SetTickerDetails(tickerDetails: Seq[TickerDetails])
+  case object UpdateTickers
+
+  def props: Props = {
+    Props(new TickerActor())
+  }
+}
+

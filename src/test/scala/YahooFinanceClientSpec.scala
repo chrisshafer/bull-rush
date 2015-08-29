@@ -34,4 +34,5 @@ class YahooFinanceClientSpec extends FunSpec with ShouldMatchers with Eventually
       }
 
     }
+
 }
