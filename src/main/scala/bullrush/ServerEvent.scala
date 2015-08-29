@@ -1,19 +1,17 @@
-import TickerActor._
-import RouterActor.SendStats
-import akka.actor.{Props, ActorRef, Actor}
-import akka.routing.{ActorRefRoutee, RemoveRoutee, AddRoutee, Routee}
+package bullrush
+
+import akka.actor.{Actor, ActorRef, Props}
+import akka.routing.{ActorRefRoutee, AddRoutee, RemoveRoutee, Routee}
 import akka.stream.actor.ActorPublisher
+import bullrush.RouterActor.SendStats
+import bullrush.SocketEvent._
+import spray.json._
 
 import scala.annotation.tailrec
-import SocketEvent._
-import spray.json.DefaultJsonProtocol._
-import spray.json._
-import scala.concurrent.duration._
 
 class RouterActor extends Actor {
-
+  import TickerModelProtocal._
   private var clients = Set[Routee]()
-  import SymbolJsonProtocol._
 
   def receive = {
     case ar: AddRoutee =>
@@ -48,7 +46,8 @@ class RouterPublisher(router: ActorRef) extends ActorPublisher[String] {
   case object QueueUpdated
 
   import akka.stream.actor.ActorPublisherMessage._
-  import scala.collection.mutable
+
+import scala.collection.mutable
 
   private val queue = mutable.Queue[String]()
   val MaxBufferSize = 100

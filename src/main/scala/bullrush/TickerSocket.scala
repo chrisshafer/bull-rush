@@ -1,21 +1,22 @@
+package bullrush
+
 
 import java.util.concurrent.TimeoutException
 
-import TickerActor.AddTicker
-import RouterActor.SendStats
-import akka.actor.{ActorRef, Props, ActorSystem}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.ws._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl._
-import spray.json.DefaultJsonProtocol._
+import bullrush.RouterActor.SendStats
+import bullrush.TickerActor.AddTicker
 import spray.json._
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import SymbolJsonProtocol._
-
+import TickerModelProtocal._
 object Upgradeable {
   def unapply(req: HttpRequest) : Option[HttpRequest] = {
     if (req.header[UpgradeToWebsocket].isDefined) {
@@ -41,7 +42,7 @@ object ChatServer extends App {
 
   implicit val system = ActorSystem("chatHandler")
   implicit val fm = ActorMaterializer()
-  import system.dispatcher
+  import bullrush.ChatServer.system.dispatcher
 
   val router = system.actorOf(Props[RouterActor], "router")
   val tickerActor : ActorRef = system.actorOf(TickerActor.props(router))
@@ -56,7 +57,7 @@ object ChatServer extends App {
 
   def eventGraphFlow(router: ActorRef): Flow[Message, Message, Unit] = {
     Flow() { implicit b =>
-      import FlowGraph.Implicits._
+      import akka.stream.scaladsl.FlowGraph.Implicits._
 
       val source = Source.actorPublisher[String](Props(classOf[RouterPublisher],router))
       val merge = b.add(Merge[String](2))
@@ -99,7 +100,7 @@ object ChatServer extends App {
     println("Server online at http://localhost:9001")
   } catch {
     case exc: TimeoutException =>
-      println("Server took to long to startup, shutting down")
+      println("Startup took too long, shutting down")
       system.shutdown()
   }
 

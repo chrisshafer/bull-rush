@@ -1,3 +1,4 @@
+import bullrush.{RouterActor, TickerActor, TickerDetails}
 import TickerActor.{GetTicker, AddTicker}
 import akka.actor.{Props, ActorSystem, ActorRef}
 import akka.util.Timeout
@@ -5,6 +6,7 @@ import org.scalatest.concurrent.{ScalaFutures, Eventually}
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{ShouldMatchers, FunSpec}
 import spray.http.StatusCodes
+import bullrush.yahoofinance.SymbolJsonProtocol
 import scala.concurrent.duration._
 import scala.concurrent.Await
 import spray.httpx.SprayJsonSupport._

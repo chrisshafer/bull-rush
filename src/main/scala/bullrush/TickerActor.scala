@@ -1,14 +1,10 @@
-import TickerActor._
-import akka.actor.{Props, ActorRef, Actor}
-import akka.routing.{ActorRefRoutee, RemoveRoutee, AddRoutee, Routee}
-import akka.stream.actor.ActorPublisher
+package bullrush
 
-import scala.annotation.tailrec
-import SocketEvent._
-import spray.json.DefaultJsonProtocol._
-import spray.json._
+import akka.actor.{Actor, ActorRef, Props}
+import bullrush.TickerActor._
+import bullrush.yahoofinance.YahooFinanceClient
+
 import scala.concurrent.duration._
-
 import scala.util.{Failure, Success}
 
 class TickerActor(router: ActorRef) extends Actor{
@@ -61,7 +57,6 @@ class TickerActor(router: ActorRef) extends Actor{
       }
     }
 
-    println(tickers.length)
     router ! tickerDetails.values.toList
 
     context.system.scheduler.scheduleOnce(1 second) {

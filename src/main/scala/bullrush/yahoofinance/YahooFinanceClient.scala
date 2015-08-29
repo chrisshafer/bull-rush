@@ -1,21 +1,20 @@
+package bullrush.yahoofinance
+
 import java.net.URLEncoder
 
-import com.typesafe.config.ConfigFactory
-import spray.client.pipelining._
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
+import spray.client.pipelining._
 import spray.http._
 import spray.httpx.SprayJsonSupport._
-import spray.client.pipelining._
 import spray.json._
-import spray.httpx.encoding.{Gzip, Deflate}
-import spray.client.pipelining._
+import DefaultJsonProtocol._
 import scala.concurrent.Future
 
 object YahooFinanceClient {
 
   implicit val system = ActorSystem()
-  import system.dispatcher // execution context for futures
+  import bullrush.yahoofinance.YahooFinanceClient.system.dispatcher
   import SymbolJsonProtocol._
 
   val singleTickerPipe: HttpRequest => Future[YahooTickerDetails] = sendReceive ~> unmarshal[YahooTickerDetails]

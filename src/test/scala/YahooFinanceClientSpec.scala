@@ -1,6 +1,7 @@
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{ShouldMatchers, FunSpec}
 import spray.http.StatusCodes
+import bullrush.yahoofinance.{SymbolJsonProtocol, YahooFinanceClient}
 import scala.concurrent.duration._
 import scala.concurrent.Await
 import spray.httpx.SprayJsonSupport._
