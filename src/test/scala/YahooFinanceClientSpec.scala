@@ -24,13 +24,13 @@ class YahooFinanceClientSpec extends FunSpec with ShouldMatchers with Eventually
 
       it("Should receive a quote for a symbol"){
         val response = Await.result(YahooFinanceClient.retrieveQuote(stockTicker), 10 seconds)
-        assert(response.symbol == stockTicker)
-
+        assert(response.stats.symbol.get == stockTicker)
       }
 
       it("Should receive a quote for multiple symbols"){
         val response = Await.result(YahooFinanceClient.retrieveQuotes(stockTickers), 10 seconds)
-        assert(response.count{tick => stockTickers.contains(tick.symbol)} == stockTickers.size)
+        assert(response.count{tick =>
+          stockTickers.contains(tick.stats.symbol.get)} == stockTickers.size)
       }
 
     }
