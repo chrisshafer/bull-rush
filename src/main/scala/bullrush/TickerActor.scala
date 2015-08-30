@@ -1,6 +1,10 @@
 package bullrush
 
+import java.util.UUID
+
 import akka.actor.{Actor, ActorRef, Props}
+import akka.routing.Routee
+import bullrush.RouterActor.UpdateClients
 import bullrush.TickerActor._
 import bullrush.yahoofinance.YahooFinanceClient
 
@@ -12,12 +16,12 @@ class TickerActor(router: ActorRef) extends Actor{
   import context._
 
   private var tickers: Seq[String] = Seq()
+  private val subscribedTo: scala.collection.mutable.Map[String,Set[String]] = scala.collection.mutable.Map()
   private val tickerDetails: scala.collection.mutable.Map[String,TickerDetails] = scala.collection.mutable.Map()
 
   def receive = {
-    case AddTicker(ticker) =>
-      tickers = tickers :+ ticker
-
+    case SubscribeToTicker(ticker,clientId) =>
+      subscribeToTicker(ticker,clientId)
     case GetTicker(ticker) =>
       if(tickerDetails.contains(ticker)) {
         sender ! tickerDetails(ticker)
@@ -36,8 +40,23 @@ class TickerActor(router: ActorRef) extends Actor{
     super.preStart()
   }
 
+  def subscribeToTicker(ticker: String, clientId: String): Unit ={
+    tickers = tickers :+ ticker
+    if(subscribedTo.contains(ticker)) {
+      subscribedTo(ticker) = subscribedTo(ticker) + clientId
+    }else{
+      subscribedTo += ticker -> Set(clientId)
+    }
+  }
+
   def updateTicker(detail: TickerDetails): Unit = {
-    tickerDetails(detail.stats.ticker.getOrElse("Not found")) = detail
+    if(detail.stats.ticker.isDefined){
+      val ticker = detail.stats.ticker.get
+      tickerDetails(ticker) = detail
+      if(subscribedTo.contains(ticker)){
+        router ! UpdateClients(detail,subscribedTo(ticker))
+      }
+    }
   }
 
   def updateTickerDetails(): Unit ={
@@ -57,8 +76,6 @@ class TickerActor(router: ActorRef) extends Actor{
       }
     }
 
-    router ! tickerDetails.values.toList
-
     context.system.scheduler.scheduleOnce(1 second) {
       self ! UpdateTickers
     }
@@ -67,7 +84,7 @@ class TickerActor(router: ActorRef) extends Actor{
 }
 
 object TickerActor {
-  case class AddTicker(ticker: String)
+  case class SubscribeToTicker(ticker: String, clientId: String)
   case class GetTicker(ticker: String)
   case class SetTickerDetails(tickerDetails: Seq[TickerDetails])
   case object UpdateTickers

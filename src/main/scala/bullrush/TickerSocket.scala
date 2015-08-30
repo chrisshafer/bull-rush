@@ -1,6 +1,7 @@
 package bullrush
 
 
+import java.util.UUID
 import java.util.concurrent.TimeoutException
 
 import akka.actor.{ActorRef, ActorSystem, Props}
@@ -8,10 +9,12 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.ws._
+import akka.routing.ActorRefRoutee
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl._
 import bullrush.RouterActor.SendStats
-import bullrush.TickerActor.AddTicker
+import bullrush.RouterPublisher
+import bullrush.TickerActor.SubscribeToTicker
 import spray.json._
 
 import scala.concurrent.Await
@@ -60,13 +63,14 @@ object ChatServer extends App {
     Flow() { implicit b =>
       import akka.stream.scaladsl.FlowGraph.Implicits._
 
-      val source = Source.actorPublisher[String](Props(classOf[RouterPublisher],router))
+      val clientId = UUID.randomUUID().toString
+      val source = Source.actorPublisher[String](Props(classOf[RouterPublisher],router,clientId))
       val merge = b.add(Merge[String](2))
 
       val validOrInvalid = b.add(Flow[SocketEvent].map{
 
         case register: SocketEvent if register.code == 201 =>
-          tickerActor ! AddTicker(register.message)
+          tickerActor ! SubscribeToTicker(register.message,clientId)
           SocketEvent("Subscribed to : "+register.message,"SERVER",201).toJson.toString()
         case _ =>
           SocketEvent("Invalid Message","SERVER",500).toJson.toString()

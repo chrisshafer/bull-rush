@@ -1,9 +1,11 @@
 package bullrush
 
+import java.util.UUID
+
 import akka.actor.{Actor, ActorRef, Props}
-import akka.routing.{ActorRefRoutee, AddRoutee, RemoveRoutee, Routee}
+import akka.routing._
 import akka.stream.actor.ActorPublisher
-import bullrush.RouterActor.SendStats
+import bullrush.RouterActor.{AddClient, RemoveClient, UpdateClients, SendStats}
 import bullrush.SocketEvent._
 import spray.json._
 
@@ -11,50 +13,57 @@ import scala.annotation.tailrec
 
 class RouterActor extends Actor {
   import TickerModelProtocal._
-  private var clients = Set[Routee]()
+  private var clients = Map[String,Routee]()
 
   def receive = {
-    case ar: AddRoutee =>
+    case AddClient(routee,id) =>
       println("Adding Routee")
-      clients = clients + ar.routee
+      clients = clients + (id -> routee)
 
-    case rr: RemoveRoutee =>
+    case RemoveClient(routee,id) =>
       println("Removing Routee")
-      clients = clients - rr.routee
+      clients = clients - id
+
+    case UpdateClients(details, torecieve) =>
+      println("sending to : "+torecieve)
+      clients.filterKeys(torecieve).foreach(_._2.send(details.toJson.toString(),sender))
 
     case msg: SocketEvent =>
-      clients.foreach(_.send(msg.toJson.toString() ,sender))
+      clients.values.foreach(_.send(msg.toJson.toString() ,sender))
 
     case tickers: Seq[TickerDetails] =>
-      clients.foreach(_.send(tickers.toJson.toString(), sender))
+      clients.values.foreach(_.send(tickers.toJson.toString(), sender))
 
     case SendStats =>
-      clients.foreach(_.send(SocketEvent(clients.size.toString,"SERVER",2).toJson.toString(),sender))
+      clients.values.foreach(_.send(SocketEvent(clients.size.toString,"SERVER",2).toJson.toString(),sender))
 
-    case msg => clients.foreach(_.send(msg, sender))
+    case msg => clients.values.foreach(_.send(msg, sender))
   }
 }
 object RouterActor{
   case object SendStats
+  case class AddClient(routee: Routee, id: String)
+  case class RemoveClient(routee: Routee, id: String)
+  case class UpdateClients(ticker: TickerDetails, clients: Set[String])
 
   def props: Props = {
     Props(new RouterActor())
   }
 }
-class RouterPublisher(router: ActorRef) extends ActorPublisher[String] {
+class RouterPublisher(router: ActorRef, id: String) extends ActorPublisher[String] {
 
   case object QueueUpdated
 
-  import akka.stream.actor.ActorPublisherMessage._
 
-import scala.collection.mutable
+  import akka.stream.actor.ActorPublisherMessage._
+  import scala.collection.mutable
 
   private val queue = mutable.Queue[String]()
   val MaxBufferSize = 100
   var queueUpdated = false
 
-  override def preStart(): Unit = router ! AddRoutee(ActorRefRoutee(self))
-  override def postStop(): Unit = router ! RemoveRoutee(ActorRefRoutee(self))
+  override def preStart(): Unit = router ! AddClient(ActorRefRoutee(self),id)
+  override def postStop(): Unit = router ! RemoveClient(ActorRefRoutee(self),id)
 
   def receive = {
 

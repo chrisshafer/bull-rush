@@ -1,5 +1,5 @@
 import bullrush.{RouterActor, TickerActor, TickerDetails}
-import TickerActor.{GetTicker, AddTicker}
+import TickerActor.{GetTicker, SubscribeToTicker}
 import akka.actor.{Props, ActorSystem, ActorRef}
 import akka.util.Timeout
 import org.scalatest.concurrent.{ScalaFutures, Eventually}
@@ -31,7 +31,7 @@ class TickerActorSpec extends FunSpec with ShouldMatchers with Eventually with S
   val tickerActor : ActorRef = system.actorOf(TickerActor.props(router))
 
   describe("The Ticker Actor"){
-    tickerActor ! AddTicker(stockTicker)
+    tickerActor ! SubscribeToTicker(stockTicker,"test")
 
     it("Will retrive the details for a stock ticker"){
 
