@@ -1,2 +1,8 @@
 # bull-rush
-Application that provides a web-socket subscribe system for stock information.
+Scala application that provides a subscription system for stock information.
+
+### Details
+ - Web-socket endpoint to subscribe to stock ticker updates
+ - Akka streams, actors, and http
+ - Spray Json
+ - Scala
