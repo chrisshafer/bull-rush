@@ -3,18 +3,23 @@ package bullrush
 import spray.json.DefaultJsonProtocol
 
 
-case class TickerDetails(symbol: String, price: Double)
+case class TickerDetails(estimates: Estimates, ratios: Ratios, HighLow: HighLow, stats: Stats)
 object TickerModelProtocal extends DefaultJsonProtocol {
-  implicit val tickerDetailsFormat = jsonFormat2(TickerDetails.apply)
+  implicit val estimateFormat = jsonFormat4(Estimates.apply)
+  implicit val ratiosFormat = jsonFormat6(Ratios.apply)
+  implicit val highLowFormat = jsonFormat4(HighLow.apply)
+  implicit val statsLowFormat = jsonFormat20(Stats.apply)
+  implicit val tickerDetailsFormat = jsonFormat4(TickerDetails.apply)
+
 }
-/*
-case class bullrush.yahoofinance.Estimates(EPSEstimateCurrentYear: Option[Double],
-                     EPSEstimateNextYear: Option[Double],
-                     EPSEstimateNextQuarter: Option[Double],
-                     OneyrTargetPrice: Option[Double]
+
+case class Estimates(epsEstimateCurrentYear: Option[Double],
+                     epsEstimateNextYear: Option[Double],
+                     epsEstimateNextQuarter: Option[Double],
+                     oneYearPriceTarget: Option[Double]
                       )
 
-case class bullrush.yahoofinance.Ratios(earningsPerShare : Option[Double],
+case class Ratios(earningsPerShare : Option[Double],
                   priceToSales : Option[Double],
                   peRatio : Option[Double],
                   pegRatio : Option[Double],
@@ -22,30 +27,31 @@ case class bullrush.yahoofinance.Ratios(earningsPerShare : Option[Double],
                   priceBook :Option[Double]
                    )
 
-case class bullrush.yahoofinance.HighLow(dayLow : Option[Double],
+case class HighLow(dayLow : Option[Double],
                    dayHigh : Option[Double],
                    yearLow : Option[Double],
                    yearHigh : Option[Double]
                     )
 
-case class bullrush.yahoofinance.Stats(symbol : String,
-                 ask : Double,
-                 averageDailyVolume : Double,
-                 bid : Double,
-                 bookValue : Double,
-                 change : Double,
-                 currency : String,
-                 lastTradeDate : String,
-                 marketCap : String,
-                 ebitda : String,
-                 lastTradePrice : Double,
-                 fiftyDayMovingAverage : Double,
-                 twoHundredDayMovingAverage : Double,
-                 name : String,
-                 open : Double,
-                 previousClose : Double,
-                 lastTradeTime : String,
-                 volume : Double,
-                 stockExchange : String,
-                 percentChange : String)
-                 */
+case class Stats(ticker : Option[String],
+                 ask : Option[Double],
+                 averageDailyVolume : Option[Double],
+                 bid : Option[Double],
+                 bookValue : Option[Double],
+                 change : Option[Double],
+                 currency : Option[String],
+                 lastTradeDate : Option[String],
+                 marketCap : Option[String],
+                 ebitda : Option[String],
+                 lastPrice : Option[Double],
+                 fiftyDayMovingAverage : Option[Double],
+                 twoHundredDayMovingAverage : Option[Double],
+                 name : Option[String],
+                 open : Option[Double],
+                 previousClose : Option[Double],
+                 lastTradeTime : Option[String],
+                 volume : Option[Double],
+                 stockExchange : Option[String],
+                 percentChange : Option[String]
+                )
+

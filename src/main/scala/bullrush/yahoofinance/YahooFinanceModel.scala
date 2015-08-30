@@ -6,107 +6,85 @@ import spray.httpx.SprayJsonSupport._
 import spray.json._
 import DefaultJsonProtocol._
 
-case class YahooTickerDetails(estimates: Estimates, ratios: Ratios, HighLow: HighLow, stats: Stats){
+case class YahooTickerDetails(estimates: Estimates, ratios: Ratios, highLow: HighLow, stats: Stats){
   def toTickerDetails: TickerDetails ={
-    TickerDetails(stats.symbol.getOrElse("Unavailable"),stats.LastTradePriceOnly.getOrElse("").toDouble)
+    TickerDetails(estimates,ratios,highLow,stats)
+  }
+
+  private implicit def toOptDubs(dub: Option[String]): Option[Double] = dub map { _.toDouble }
+  private implicit def statsToStats(stats: Stats): bullrush.Stats ={
+    bullrush.Stats(
+      stats.symbol,stats.Ask,stats.AverageDailyVolume,
+      stats.Bid,stats.BookValue,stats.Change,
+      stats.Currency,stats.LastTradeDate,stats.MarketCapitalization,
+      stats.EBITDA,stats.LastTradePriceOnly,stats.FiftydayMovingAverage,
+      stats.TwoHundreddayMovingAverage,stats.Name,stats.Open,
+      stats.PreviousClose,stats.LastTradeTime,stats.Volume,
+      stats.StockExchange,stats.PercentChange
+    )
+  }
+  private implicit def highLowToHighLow(highLow: HighLow): bullrush.HighLow ={
+    bullrush.HighLow(
+      highLow.DaysLow,highLow.DaysHigh,
+      highLow.YearLow,highLow.YearHigh
+    )
+  }
+  private implicit def ratiosToRatios(ratios: Ratios): bullrush.Ratios ={
+    bullrush.Ratios(
+      ratios.EarningsShare,
+      ratios.PriceSales,
+      ratios.PERatio,
+      ratios.PEGRatio,
+      ratios.ShortRatio,
+      ratios.PriceBook
+    )
+  }
+  private implicit def estimatesToEstimates(estimates: Estimates): bullrush.Estimates ={
+    bullrush.Estimates(
+      estimates.EPSEstimateCurrentYear,estimates.EPSEstimateNextYear,
+      estimates.EPSEstimateNextQuarter,estimates.OneyrTargetPrice
+    )
   }
 }
 
-object SymbolJsonProtocol extends DefaultJsonProtocol {
+case class Stats(symbol : Option[String],
+                 Ask : Option[String],
+                 AverageDailyVolume : Option[String],
+                 Bid : Option[String],
+                 BookValue : Option[String],
+                 Change : Option[String],
+                 Currency : Option[String],
+                 LastTradeDate : Option[String],
+                 MarketCapitalization : Option[String],
+                 EBITDA : Option[String],
+                 LastTradePriceOnly : Option[String],
+                 FiftydayMovingAverage : Option[String],
+                 TwoHundreddayMovingAverage : Option[String],
+                 Name : Option[String],
+                 Open : Option[String],
+                 PreviousClose : Option[String],
+                 LastTradeTime : Option[String],
+                 Volume : Option[String],
+                 StockExchange : Option[String],
+                 PercentChange : Option[String]
+                  )
 
-  implicit val tickerDetailsFormat = jsonFormat2(TickerDetails.apply)
-  implicit val estimateFormat = jsonFormat4(Estimates.apply)
-  implicit val ratiosFormat = jsonFormat6(Ratios.apply)
-  implicit val highLowFormat = jsonFormat4(HighLow.apply)
-  implicit val statsLowFormat = jsonFormat20(Stats.apply)
+case class Ratios(EarningsShare : Option[String],
+                  PriceSales : Option[String],
+                  PERatio : Option[String],
+                  PEGRatio : Option[String],
+                  ShortRatio : Option[String],
+                  PriceBook :Option[String]
+                   )
 
-  implicit object YahooTickerDetailsCollectionFormat extends RootJsonFormat[Seq[YahooTickerDetails]] {
-    def write(c: Seq[YahooTickerDetails]) = JsObject(
-      "symbol" -> JsString("dont use this")
-    )
+case class HighLow(DaysLow : Option[String],
+                   DaysHigh : Option[String],
+                   YearLow : Option[String],
+                   YearHigh : Option[String]
+                    )
 
-    def read(value: JsValue) = {
-      // this is an unholy mess
-      value.asJsObject.fields.get("query").get.asJsObject
-        .fields.get("results").get.asJsObject
-        .fields.get("quote").get.asInstanceOf[JsArray].elements.map {
-        x => deserializeToYahooTickerDetails(x.asJsObject)
-      }
-    }
-  }
-
-  implicit object TickerDetailFormat extends RootJsonFormat[YahooTickerDetails] {
-    def write(c: YahooTickerDetails) = JsObject(
-      "symbol" -> JsString("dont use this")
-    )
-
-    def read(value: JsValue) = {
-      // this is an unholy mess
-      val quote = value.asJsObject.fields.get("query").get.asJsObject
-        .fields.get("results").get.asJsObject.fields.get("quote").get.asJsObject
-      deserializeToYahooTickerDetails(quote)
-    }
-
-  }
-
-  def deserializeToYahooTickerDetails(ticker: JsObject): YahooTickerDetails ={
-    YahooTickerDetails(deserializeToEstimates(ticker),
-                       deserializeToRatios(ticker),
-                       deserializeHighLow(ticker),
-                       deserializeStats(ticker))
-  }
-  def deserializeToRatios(tickerJson: JsObject): Ratios ={
-    val fields = Seq("EarningsShare",
-      "PriceSales",
-      "PERatio",
-      "PEGRatio",
-      "ShortRatio",
-      "PriceBook")
-
-    val ratios = tickerJson.fields.filter(name => fields.contains(name._1))
-    JsObject(ratios).convertTo[Ratios]
-  }
-  def deserializeToEstimates(tickerJson: JsObject): Estimates ={
-    val fields = Seq("EPSEstimateCurrentYear",
-      "EPSEstimateNextYear",
-      "EPSEstimateNextQuarter",
-      "OneyrTargetPrice")
-    val estimates = tickerJson.fields.filter(name => fields.contains(name._1))
-    JsObject(estimates).convertTo[Estimates]
-
-  }
-  def deserializeHighLow(tickerJson: JsObject): HighLow ={
-    val fields = Seq("DaysLow",
-      "DaysHigh",
-      "YearLow",
-      "YearHigh")
-    val highLow = tickerJson.fields.filter(name => fields.contains(name._1))
-    JsObject(highLow).convertTo[HighLow]
-
-  }
-  def deserializeStats(tickerJson: JsObject): Stats ={
-    val fields = Seq("symbol",
-      "Ask",
-      "AverageDailyVolume",
-      "Bid",
-      "BookValue",
-      "Change",
-      "Currency",
-      "LastTradeDate",
-      "MarketCapitalization",
-      "EBITDA",
-      "LastTradePriceOnly",
-      "FiftydayMovingAverage",
-      "TwoHundreddayMovingAverage",
-      "Name",
-      "Open",
-      "PreviousClose",
-      "LastTradeTime",
-      "Volume",
-      "StockExchange",
-      "PercentChange")
-    val stats = tickerJson.fields.filter(name => fields.contains(name._1))
-    JsObject(stats).convertTo[Stats]
-
-  }
-}
+case class Estimates(EPSEstimateCurrentYear: Option[String],
+                     EPSEstimateNextYear: Option[String],
+                     EPSEstimateNextQuarter: Option[String],
+                     OneyrTargetPrice: Option[String]
+                      )

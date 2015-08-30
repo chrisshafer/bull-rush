@@ -15,7 +15,7 @@ object YahooFinanceClient {
 
   implicit val system = ActorSystem()
   import bullrush.yahoofinance.YahooFinanceClient.system.dispatcher
-  import SymbolJsonProtocol._
+  import YahooJsonProtocol._
 
   val singleTickerPipe: HttpRequest => Future[YahooTickerDetails] = sendReceive ~> unmarshal[YahooTickerDetails]
   val multiTickerPipe: HttpRequest => Future[Seq[YahooTickerDetails]] = sendReceive ~> unmarshal[Seq[YahooTickerDetails]]

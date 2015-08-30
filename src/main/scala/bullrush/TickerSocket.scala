@@ -17,6 +17,7 @@ import spray.json._
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import TickerModelProtocal._
+
 object Upgradeable {
   def unapply(req: HttpRequest) : Option[HttpRequest] = {
     if (req.header[UpgradeToWebsocket].isDefined) {

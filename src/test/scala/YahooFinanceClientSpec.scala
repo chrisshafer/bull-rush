@@ -1,7 +1,7 @@
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{ShouldMatchers, FunSpec}
 import spray.http.StatusCodes
-import bullrush.yahoofinance.{SymbolJsonProtocol, YahooFinanceClient}
+import bullrush.yahoofinance.{YahooJsonProtocol, YahooFinanceClient}
 import scala.concurrent.duration._
 import scala.concurrent.Await
 import spray.httpx.SprayJsonSupport._
@@ -11,7 +11,7 @@ import DefaultJsonProtocol._
 
 class YahooFinanceClientSpec extends FunSpec with ShouldMatchers with Eventually{
   import scala.concurrent.ExecutionContext.Implicits.global
-  import SymbolJsonProtocol._
+  import YahooJsonProtocol._
 
     val stockTicker = "SPWR"
     val stockTickers = Seq("SPWR","SUNE")

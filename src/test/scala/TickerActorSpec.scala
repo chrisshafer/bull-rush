@@ -6,7 +6,7 @@ import org.scalatest.concurrent.{ScalaFutures, Eventually}
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{ShouldMatchers, FunSpec}
 import spray.http.StatusCodes
-import bullrush.yahoofinance.SymbolJsonProtocol
+import bullrush.yahoofinance.YahooJsonProtocol
 import scala.concurrent.duration._
 import scala.concurrent.Await
 import spray.httpx.SprayJsonSupport._
@@ -16,7 +16,7 @@ import DefaultJsonProtocol._
 
 class TickerActorSpec extends FunSpec with ShouldMatchers with Eventually with ScalaFutures{
   import scala.concurrent.ExecutionContext.Implicits.global
-  import SymbolJsonProtocol._
+  import YahooJsonProtocol._
   import akka.pattern.ask
 
   val stockTicker = "SPWR"
@@ -38,7 +38,7 @@ class TickerActorSpec extends FunSpec with ShouldMatchers with Eventually with S
       eventually{
         val future = (tickerActor ? GetTicker(stockTicker)).mapTo[TickerDetails]
         whenReady(future) { response =>
-          assert(response.symbol == stockTicker)
+          assert(response.stats.ticker.get == stockTicker)
         }
       }
 

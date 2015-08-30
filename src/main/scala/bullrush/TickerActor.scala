@@ -37,7 +37,7 @@ class TickerActor(router: ActorRef) extends Actor{
   }
 
   def updateTicker(detail: TickerDetails): Unit = {
-    tickerDetails(detail.symbol) = detail
+    tickerDetails(detail.stats.ticker.getOrElse("Not found")) = detail
   }
 
   def updateTickerDetails(): Unit ={
