@@ -1,7 +1,9 @@
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.util.Timeout
-import bullrush.{TickerDetails, RouterActor, TickerActor}
-import bullrush.TickerActor.{GetTicker, SubscribeToTicker}
+import bullrush.TickerDetails
+import bullrush.server
+import bullrush.server.{RouterActor, TickerActor}
+import bullrush.server.TickerActor.{SubscribeToTicker, GetTicker}
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{FunSpec, ShouldMatchers}

@@ -1,4 +1,4 @@
-package bullrush.yahoofinance
+package bullrush.server.yahoofinance
 
 import java.net.URLEncoder
 
@@ -14,7 +14,7 @@ import scala.concurrent.Future
 object YahooFinanceClient {
 
   implicit val system = ActorSystem()
-  import bullrush.yahoofinance.YahooFinanceClient.system.dispatcher
+  import bullrush.server.yahoofinance.YahooFinanceClient.system.dispatcher
   import YahooJsonProtocol._
 
   val singleTickerPipe: HttpRequest => Future[YahooTickerDetails] = sendReceive ~> unmarshal[YahooTickerDetails]

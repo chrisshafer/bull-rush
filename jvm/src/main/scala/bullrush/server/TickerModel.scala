@@ -1,9 +1,12 @@
-package bullrush
+package bullrush.server
 
-import spray.json.DefaultJsonProtocol
+import bullrush._
+import spray.json._
+import spray.httpx.SprayJsonSupport._
+import DefaultJsonProtocol._
 
 
-case class TickerDetails(estimates: Estimates, ratios: Ratios, HighLow: HighLow, stats: Stats)
+
 object TickerModelProtocal extends DefaultJsonProtocol {
   implicit val estimateFormat = jsonFormat4(Estimates.apply)
   implicit val ratiosFormat = jsonFormat6(Ratios.apply)
@@ -12,7 +15,8 @@ object TickerModelProtocal extends DefaultJsonProtocol {
   implicit val tickerDetailsFormat = jsonFormat4(TickerDetails.apply)
 
 }
-
+/*
+case class TickerDetails(estimates: Estimates, ratios: Ratios, HighLow: HighLow, stats: Stats)
 case class Estimates(epsEstimateCurrentYear: Option[Double],
                      epsEstimateNextYear: Option[Double],
                      epsEstimateNextQuarter: Option[Double],
@@ -54,4 +58,4 @@ case class Stats(ticker : Option[String],
                  stockExchange : Option[String],
                  percentChange : Option[String]
                 )
-
+*/

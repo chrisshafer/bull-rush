@@ -1,4 +1,4 @@
-import bullrush.yahoofinance.YahooFinanceClient
+import bullrush.server.yahoofinance.YahooFinanceClient
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, ShouldMatchers}
 

@@ -1,4 +1,4 @@
-package bullrush.yahoofinance
+package bullrush.server.yahoofinance
 
 import bullrush.TickerDetails
 import spray.json._

@@ -1,6 +1,5 @@
-package bullrush.yahoofinance
+package bullrush.server.yahoofinance
 
-import bullrush.TickerDetails
 import spray.httpx.SprayJsonSupport._
 import spray.json._
 import DefaultJsonProtocol._

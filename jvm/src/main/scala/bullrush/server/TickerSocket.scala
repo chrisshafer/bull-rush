@@ -1,5 +1,4 @@
-package bullrush
-
+package bullrush.server
 
 import java.util.UUID
 import java.util.concurrent.TimeoutException
@@ -9,17 +8,16 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.ws._
-import akka.routing.ActorRefRoutee
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl._
-import bullrush.RouterActor.SendStats
-import bullrush.RouterPublisher
-import bullrush.TickerActor.SubscribeToTicker
+import bullrush.TickerDetails
+import bullrush.server.RouterActor.SendStats
+import bullrush.server.TickerActor.SubscribeToTicker
 import spray.json._
+import TickerModelProtocal._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import TickerModelProtocal._
 
 object Upgradeable {
   def unapply(req: HttpRequest) : Option[HttpRequest] = {
@@ -46,7 +44,6 @@ object ChatServer extends App {
 
   implicit val system = ActorSystem("chatHandler")
   implicit val fm = ActorMaterializer()
-  import bullrush.ChatServer.system.dispatcher
 
   val router = system.actorOf(Props[RouterActor], "router")
   val tickerActor : ActorRef = system.actorOf(TickerActor.props(router))
@@ -94,10 +91,6 @@ object ChatServer extends App {
 
   def upgrade(req: HttpRequest, flow: Flow[Message, Message, Unit]) = {
     req.header[UpgradeToWebsocket].get.handleMessages(flow)
-  }
-
-  system.scheduler.schedule(50 milliseconds, 10 second){
-    router ! SendStats
   }
 
   try {

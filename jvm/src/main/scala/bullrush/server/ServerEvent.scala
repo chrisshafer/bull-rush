@@ -1,18 +1,15 @@
-package bullrush
-
-import java.util.UUID
+package bullrush.server
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.routing._
 import akka.stream.actor.ActorPublisher
-import bullrush.RouterActor.{AddClient, RemoveClient, UpdateClients, SendStats}
-import bullrush.SocketEvent._
+import bullrush.TickerDetails
+import bullrush.server.RouterActor.{SendStats, AddClient, UpdateClients, RemoveClient}
 import spray.json._
-
+import TickerModelProtocal._
 import scala.annotation.tailrec
 
 class RouterActor extends Actor {
-  import TickerModelProtocal._
   private var clients = Map[String,Routee]()
 
   def receive = {
@@ -53,7 +50,8 @@ class RouterPublisher(router: ActorRef, id: String) extends ActorPublisher[Strin
 
 
   import akka.stream.actor.ActorPublisherMessage._
-  import scala.collection.mutable
+
+import scala.collection.mutable
 
   private val queue = mutable.Queue[String]()
   val MaxBufferSize = 100

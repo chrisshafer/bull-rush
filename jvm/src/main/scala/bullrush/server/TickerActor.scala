@@ -1,12 +1,10 @@
-package bullrush
-
-import java.util.UUID
+package bullrush.server
 
 import akka.actor.{Actor, ActorRef, Props}
-import akka.routing.Routee
-import bullrush.RouterActor.UpdateClients
-import bullrush.TickerActor._
-import bullrush.yahoofinance.YahooFinanceClient
+import bullrush.TickerDetails
+import bullrush.server.RouterActor.UpdateClients
+import bullrush.server.TickerActor.{UpdateTickers, SetTickerDetails, GetTicker, SubscribeToTicker}
+import bullrush.server.yahoofinance.YahooFinanceClient
 
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
