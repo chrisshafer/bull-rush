@@ -1,22 +1,15 @@
-import bullrush.{RouterActor, TickerActor, TickerDetails}
-import TickerActor.{GetTicker, SubscribeToTicker}
-import akka.actor.{Props, ActorSystem, ActorRef}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.util.Timeout
-import org.scalatest.concurrent.{ScalaFutures, Eventually}
+import bullrush.{TickerDetails, RouterActor, TickerActor}
+import bullrush.TickerActor.{GetTicker, SubscribeToTicker}
+import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatest.time.{Seconds, Span}
-import org.scalatest.{ShouldMatchers, FunSpec}
-import spray.http.StatusCodes
-import bullrush.yahoofinance.YahooJsonProtocol
+import org.scalatest.{FunSpec, ShouldMatchers}
+
 import scala.concurrent.duration._
-import scala.concurrent.Await
-import spray.httpx.SprayJsonSupport._
-import spray.json._
-import DefaultJsonProtocol._
 
 
 class TickerActorSpec extends FunSpec with ShouldMatchers with Eventually with ScalaFutures{
-  import scala.concurrent.ExecutionContext.Implicits.global
-  import YahooJsonProtocol._
   import akka.pattern.ask
 
   val stockTicker = "SPWR"

@@ -17,15 +17,12 @@ class RouterActor extends Actor {
 
   def receive = {
     case AddClient(routee,id) =>
-      println("Adding Routee")
       clients = clients + (id -> routee)
 
     case RemoveClient(routee,id) =>
-      println("Removing Routee")
       clients = clients - id
 
     case UpdateClients(details, torecieve) =>
-      println("sending to : "+torecieve)
       clients.filterKeys(torecieve).foreach(_._2.send(details.toJson.toString(),sender))
 
     case msg: SocketEvent =>
