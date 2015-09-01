@@ -1,6 +1,6 @@
 package bullrushweb
 
-import bullrush.Estimates
+import bullrush.model.Estimates
 import org.scalajs.dom
 
 import scala.scalajs.js.JSApp

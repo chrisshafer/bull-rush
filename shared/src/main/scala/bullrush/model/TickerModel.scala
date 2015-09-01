@@ -1,13 +1,11 @@
-package bullrush
+package bullrush.model
 
 case class TickerDetails(estimates: Estimates, ratios: Ratios, HighLow: HighLow, stats: Stats)
-
-case class Estimates(epsEstimateCurrentYear: Option[Double],
-                     epsEstimateNextYear: Option[Double],
-                     epsEstimateNextQuarter: Option[Double],
-                     oneYearPriceTarget: Option[Double]
-                      )
-
+case class HighLow(dayLow : Option[Double],
+                   dayHigh : Option[Double],
+                   yearLow : Option[Double],
+                   yearHigh : Option[Double]
+                    )
 case class Ratios(earningsPerShare : Option[Double],
                   priceToSales : Option[Double],
                   peRatio : Option[Double],
@@ -15,13 +13,11 @@ case class Ratios(earningsPerShare : Option[Double],
                   shortRatio : Option[Double],
                   priceBook :Option[Double]
                    )
-
-case class HighLow(dayLow : Option[Double],
-                   dayHigh : Option[Double],
-                   yearLow : Option[Double],
-                   yearHigh : Option[Double]
-                    )
-
+case class Estimates(epsEstimateCurrentYear: Option[Double],
+                     epsEstimateNextYear: Option[Double],
+                     epsEstimateNextQuarter: Option[Double],
+                     oneYearPriceTarget: Option[Double]
+                      )
 case class Stats(ticker : Option[String],
                  ask : Option[Double],
                  averageDailyVolume : Option[Double],
@@ -42,5 +38,5 @@ case class Stats(ticker : Option[String],
                  volume : Option[Double],
                  stockExchange : Option[String],
                  percentChange : Option[String]
-                )
+                  )
 

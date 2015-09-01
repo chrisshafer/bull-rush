@@ -1,6 +1,6 @@
 package bullrush.server.yahoofinance
 
-import bullrush.TickerDetails
+import bullrush.model.TickerDetails
 import spray.json._
 import spray.httpx.SprayJsonSupport._
 import spray.json._
@@ -12,8 +12,8 @@ case class YahooTickerDetails(estimates: Estimates, ratios: Ratios, highLow: Hig
   }
 
   private implicit def toOptDubs(dub: Option[String]): Option[Double] = dub map { _.toDouble }
-  private implicit def statsToStats(stats: Stats): bullrush.Stats ={
-    bullrush.Stats(
+  private implicit def statsToStats(stats: Stats): bullrush.model.Stats ={
+    bullrush.model.Stats(
       stats.symbol,stats.Ask,stats.AverageDailyVolume,
       stats.Bid,stats.BookValue,stats.Change,
       stats.Currency,stats.LastTradeDate,stats.MarketCapitalization,
@@ -23,14 +23,14 @@ case class YahooTickerDetails(estimates: Estimates, ratios: Ratios, highLow: Hig
       stats.StockExchange,stats.PercentChange
     )
   }
-  private implicit def highLowToHighLow(highLow: HighLow): bullrush.HighLow ={
-    bullrush.HighLow(
+  private implicit def highLowToHighLow(highLow: HighLow): bullrush.model.HighLow ={
+    bullrush.model.HighLow(
       highLow.DaysLow,highLow.DaysHigh,
       highLow.YearLow,highLow.YearHigh
     )
   }
-  private implicit def ratiosToRatios(ratios: Ratios): bullrush.Ratios ={
-    bullrush.Ratios(
+  private implicit def ratiosToRatios(ratios: Ratios): bullrush.model.Ratios ={
+    bullrush.model.Ratios(
       ratios.EarningsShare,
       ratios.PriceSales,
       ratios.PERatio,
@@ -39,8 +39,8 @@ case class YahooTickerDetails(estimates: Estimates, ratios: Ratios, highLow: Hig
       ratios.PriceBook
     )
   }
-  private implicit def estimatesToEstimates(estimates: Estimates): bullrush.Estimates ={
-    bullrush.Estimates(
+  private implicit def estimatesToEstimates(estimates: Estimates): bullrush.model.Estimates ={
+    bullrush.model.Estimates(
       estimates.EPSEstimateCurrentYear,estimates.EPSEstimateNextYear,
       estimates.EPSEstimateNextQuarter,estimates.OneyrTargetPrice
     )

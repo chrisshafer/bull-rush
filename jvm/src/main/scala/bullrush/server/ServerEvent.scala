@@ -3,7 +3,7 @@ package bullrush.server
 import akka.actor.{Actor, ActorRef, Props}
 import akka.routing._
 import akka.stream.actor.ActorPublisher
-import bullrush.TickerDetails
+import bullrush.model.TickerDetails
 import bullrush.server.RouterActor.{SendStats, AddClient, UpdateClients, RemoveClient}
 import spray.json._
 import TickerModelProtocal._

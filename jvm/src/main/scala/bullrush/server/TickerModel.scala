@@ -1,6 +1,7 @@
 package bullrush.server
 
 import bullrush._
+import bullrush.model._
 import spray.json._
 import spray.httpx.SprayJsonSupport._
 import DefaultJsonProtocol._

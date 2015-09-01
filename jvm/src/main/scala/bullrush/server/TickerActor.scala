@@ -1,7 +1,7 @@
 package bullrush.server
 
 import akka.actor.{Actor, ActorRef, Props}
-import bullrush.TickerDetails
+import bullrush.model.TickerDetails
 import bullrush.server.RouterActor.UpdateClients
 import bullrush.server.TickerActor.{UpdateTickers, SetTickerDetails, GetTicker, SubscribeToTicker}
 import bullrush.server.yahoofinance.YahooFinanceClient

@@ -1,6 +1,6 @@
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.util.Timeout
-import bullrush.TickerDetails
+import bullrush.model.TickerDetails
 import bullrush.server
 import bullrush.server.{RouterActor, TickerActor}
 import bullrush.server.TickerActor.{SubscribeToTicker, GetTicker}

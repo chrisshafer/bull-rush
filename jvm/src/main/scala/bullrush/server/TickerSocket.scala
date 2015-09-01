@@ -10,7 +10,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.ws._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl._
-import bullrush.TickerDetails
+import bullrush.model.TickerDetails
 import bullrush.server.RouterActor.SendStats
 import bullrush.server.TickerActor.SubscribeToTicker
 import spray.json._
