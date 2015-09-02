@@ -10,7 +10,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.ws._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl._
-import bullrush.model.TickerDetails
+import bullrush.model.{TickerUpdate, SocketEvent, TickerDetails}
 import bullrush.server.RouterActor.SendStats
 import bullrush.server.TickerActor.SubscribeToTicker
 import spray.json._
@@ -30,20 +30,17 @@ object Upgradeable {
   }
 }
 
-case class TickerUpdate(message: String, code: Int = 1, tickerDetail: TickerDetails)
-case object TickerUpdate extends DefaultJsonProtocol {
-  implicit val protocol = jsonFormat3(TickerUpdate.apply)
+case object CommunicationProtocols extends DefaultJsonProtocol {
+  implicit val tickerUpdateFormat = jsonFormat3(TickerUpdate.apply)
+  implicit val socketEventFormat = jsonFormat3(SocketEvent.apply)
 }
 
-case class SocketEvent(message: String, user: String, code: Int = 1)
-case object SocketEvent extends DefaultJsonProtocol {
-  implicit val protocol = jsonFormat3(SocketEvent.apply)
-}
 
 object ChatServer extends App {
 
   implicit val system = ActorSystem("chatHandler")
   implicit val fm = ActorMaterializer()
+  import CommunicationProtocols._
 
   val router = system.actorOf(Props[RouterActor], "router")
   val tickerActor : ActorRef = system.actorOf(TickerActor.props(router))

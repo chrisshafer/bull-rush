@@ -3,7 +3,7 @@ package bullrush.server
 import akka.actor.{Actor, ActorRef, Props}
 import akka.routing._
 import akka.stream.actor.ActorPublisher
-import bullrush.model.TickerDetails
+import bullrush.model.{SocketEvent, TickerDetails}
 import bullrush.server.RouterActor.{SendStats, AddClient, UpdateClients, RemoveClient}
 import spray.json._
 import TickerModelProtocal._
@@ -11,6 +11,7 @@ import scala.annotation.tailrec
 
 class RouterActor extends Actor {
   private var clients = Map[String,Routee]()
+  import CommunicationProtocols._
 
   def receive = {
     case AddClient(routee,id) =>
