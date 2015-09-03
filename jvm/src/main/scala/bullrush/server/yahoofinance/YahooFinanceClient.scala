@@ -28,16 +28,16 @@ object YahooFinanceClient {
 
   def symbolYQL(ticker: String*) =
     URLEncoder.encode("select * from yahoo.finance.quotes where symbol in (\""+ticker.mkString(",")+"\")","UTF-8")
-  def symbolsYQL(tickers: Seq[String]) =
+  def symbolsYQL(tickers: Set[String]) =
     URLEncoder.encode("select * from yahoo.finance.quotes where symbol in (\""+tickers.mkString(",")+"\")","UTF-8")
 
   def symbolURL(ticker: String) = BASE_URL+"/yql?q="+symbolYQL(ticker)+"&format="+format+"&env="+env
-  def symbolsURL(tickers: Seq[String]) = BASE_URL+"/yql?q="+symbolsYQL(tickers)+"&format="+format+"&env="+env
+  def symbolsURL(tickers: Set[String]) = BASE_URL+"/yql?q="+symbolsYQL(tickers)+"&format="+format+"&env="+env
 
   def retrieveQuote(ticker: String):Future[YahooTickerDetails] =
     singleTickerPipe(Get(symbolURL(ticker)))
 
-  def retrieveQuotes(tickers: Seq[String]):Future[Seq[YahooTickerDetails]] =
+  def retrieveQuotes(tickers: Set[String]):Future[Seq[YahooTickerDetails]] =
     multiTickerPipe(Get(symbolsURL(tickers)))
 
 

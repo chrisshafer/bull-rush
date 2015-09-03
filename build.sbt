@@ -18,6 +18,7 @@ lazy val bullRush = crossProject.in(file(".")).
     scalaVersion := "2.11.6",
 
     libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % "0.3.6"
     )
   ).
   jvmSettings(
@@ -45,13 +46,14 @@ lazy val bullRush = crossProject.in(file(".")).
       "org.scala-js" %%% "scalajs-dom" % "0.8.1",
       "com.github.japgolly.scalajs-react" %%% "core" % "0.9.2",
       "com.github.japgolly.scalajs-react" %%% "extra" % "0.9.2",
-      "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
-      "com.lihaoyi" %%% "upickle" % "0.3.4"
+      "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test"
 
     ),
     jsDependencies ++= Seq(
     "org.webjars" % "react" % "0.12.2" / "react-with-addons.js" commonJSName "React"
-    )
+    ),
+    persistLauncher in Compile := true,
+    persistLauncher in Test := false
   )
 
 lazy val shared = Project("BullRushShared", file("shared")).

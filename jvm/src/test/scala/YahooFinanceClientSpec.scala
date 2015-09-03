@@ -9,7 +9,7 @@ import scala.concurrent.duration._
 class YahooFinanceClientSpec extends FunSpec with ShouldMatchers with Eventually{
 
     val stockTicker = "SPWR"
-    val stockTickers = Seq("SPWR","SUNE")
+    val stockTickers = Set("SPWR","SUNE")
     describe("The yahoo finance client symbols"){
       it("Should generate a correct url"){
         assert(YahooFinanceClient.symbolURL(stockTicker) ==

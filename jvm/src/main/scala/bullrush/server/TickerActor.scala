@@ -13,7 +13,7 @@ class TickerActor(router: ActorRef) extends Actor{
 
   import context._
 
-  private var tickers: Seq[String] = Seq()
+  private var tickers: Set[String] = Set()
   private val subscribedTo: scala.collection.mutable.Map[String,Set[String]] = scala.collection.mutable.Map()
   private val tickerDetails: scala.collection.mutable.Map[String,TickerDetails] = scala.collection.mutable.Map()
 
@@ -39,7 +39,7 @@ class TickerActor(router: ActorRef) extends Actor{
   }
 
   def subscribeToTicker(ticker: String, clientId: String): Unit ={
-    tickers = tickers :+ ticker
+    tickers = tickers + ticker
     if(subscribedTo.contains(ticker)) {
       subscribedTo(ticker) = subscribedTo(ticker) + clientId
     }else{
@@ -58,14 +58,14 @@ class TickerActor(router: ActorRef) extends Actor{
   }
 
   def updateTickerDetails(): Unit ={
-    if(tickers.length > 1) {
+    if(tickers.size > 1) {
       YahooFinanceClient.retrieveQuotes(tickers) onComplete {
         case Success(res) =>
           self ! SetTickerDetails(res.map(_.toTickerDetails))
         case Failure(err) =>
           println(err.getMessage)
       }
-    }else if(tickers.length == 1){
+    }else if(tickers.size == 1){
       YahooFinanceClient.retrieveQuote(tickers.head) onComplete {
         case Success(res) =>
           self ! SetTickerDetails(Seq(res.toTickerDetails))

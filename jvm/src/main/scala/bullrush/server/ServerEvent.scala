@@ -3,11 +3,12 @@ package bullrush.server
 import akka.actor.{Actor, ActorRef, Props}
 import akka.routing._
 import akka.stream.actor.ActorPublisher
-import bullrush.model.{SocketEvent, TickerDetails}
-import bullrush.server.RouterActor.{SendStats, AddClient, UpdateClients, RemoveClient}
+import bullrush.model.{TickerMessage, TickerDetails}
+import bullrush.server.RouterActor.{ AddClient, UpdateClients, RemoveClient}
 import spray.json._
 import TickerModelProtocal._
 import scala.annotation.tailrec
+import upickle.default._
 
 class RouterActor extends Actor {
   private var clients = Map[String,Routee]()
@@ -21,22 +22,20 @@ class RouterActor extends Actor {
       clients = clients - id
 
     case UpdateClients(details, torecieve) =>
-      clients.filterKeys(torecieve).foreach(_._2.send(details.toJson.toString(),sender))
+      val message = TickerMessage("",202,Some(details),None)
+      println("Sending to : "+clients.filterKeys(torecieve))
+      clients.filterKeys(torecieve).foreach(_._2.send(write(message),sender))
 
-    case msg: SocketEvent =>
+    case msg: TickerMessage =>
       clients.values.foreach(_.send(msg.toJson.toString() ,sender))
 
     case tickers: Seq[TickerDetails] =>
       clients.values.foreach(_.send(tickers.toJson.toString(), sender))
 
-    case SendStats =>
-      clients.values.foreach(_.send(SocketEvent(clients.size.toString,"SERVER",2).toJson.toString(),sender))
-
     case msg => clients.values.foreach(_.send(msg, sender))
   }
 }
 object RouterActor{
-  case object SendStats
   case class AddClient(routee: Routee, id: String)
   case class RemoveClient(routee: Routee, id: String)
   case class UpdateClients(ticker: TickerDetails, clients: Set[String])

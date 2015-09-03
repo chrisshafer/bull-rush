@@ -10,8 +10,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.ws._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl._
-import bullrush.model.{TickerUpdate, SocketEvent, TickerDetails}
-import bullrush.server.RouterActor.SendStats
+import bullrush.model._
 import bullrush.server.TickerActor.SubscribeToTicker
 import spray.json._
 import TickerModelProtocal._
@@ -31,12 +30,12 @@ object Upgradeable {
 }
 
 case object CommunicationProtocols extends DefaultJsonProtocol {
-  implicit val tickerUpdateFormat = jsonFormat3(TickerUpdate.apply)
-  implicit val socketEventFormat = jsonFormat3(SocketEvent.apply)
+  implicit val messageFormat = jsonFormat2(MessageDetails.apply)
+  implicit val tickerUpdateFormat = jsonFormat4(TickerMessage.apply)
 }
 
 
-object ChatServer extends App {
+object TickerServer extends App {
 
   implicit val system = ActorSystem("chatHandler")
   implicit val fm = ActorMaterializer()
@@ -56,23 +55,24 @@ object ChatServer extends App {
   def eventGraphFlow(router: ActorRef): Flow[Message, Message, Unit] = {
     Flow() { implicit b =>
       import akka.stream.scaladsl.FlowGraph.Implicits._
+      import upickle.default._
 
       val clientId = UUID.randomUUID().toString
       val source = Source.actorPublisher[String](Props(classOf[RouterPublisher],router,clientId))
       val merge = b.add(Merge[String](2))
 
-      val validOrInvalid = b.add(Flow[SocketEvent].map{
+      val validOrInvalid = b.add(Flow[TickerMessage].map{
 
-        case register: SocketEvent if register.code == 201 =>
+        case register: TickerMessage if register.code == 201 =>
           tickerActor ! SubscribeToTicker(register.message,clientId)
-          SocketEvent("Subscribed to : "+register.message,"SERVER",201).toJson.toString()
+          TickerMessage("Subscribed to : "+register.message,201,None,None).toJson.toString()
         case _ =>
-          SocketEvent("Invalid Message","SERVER",500).toJson.toString()
+          TickerMessage("Invalid Message",500,None,None).toJson.toString()
       })
 
-      val mapMsgToIncomingMessage = b.add(Flow[Message].map[SocketEvent] {
-        case TextMessage.Strict(txt) => JsonParser(txt).convertTo[SocketEvent]
-        case _ => SocketEvent("","",-1)
+      val mapMsgToIncomingMessage = b.add(Flow[Message].map[TickerMessage] {
+        case TextMessage.Strict(txt) => read[TickerMessage](txt)
+        case _ => TickerMessage("",-1,None,None)
       })
 
       val mapStringToMsg = b.add(Flow[String].map[Message]( x => TextMessage.Strict(x)))
