@@ -22,7 +22,8 @@ gulp.task('preview', function() {
 gulp.task('watch', function() {
     gulp.watch([scalaJSDir + "/**/*.js", scalaJSDir + "/**/*.map"], ["scalajs"]);
     gulp.watch(workingDir + "/**/*.js", ["js"]);
-    gulp.watch(workingDir + "/scss/**/*.scss", ["css"]);
+    gulp.watch(workingDir + "/scss/**/*.scss", ["scss"]);
+    gulp.watch(workingDir + "/css/**/*.css", ["css"]);
     gulp.watch(["**/*.html", "!node_modules/**", "!bower_components/**", "!dev/**", "!dist/**"], ["html"]);
     gulp.watch("**/*.{woff,ttf,woff2}", ["font"]);
     gulp.watch(workingDir + "/img/**/*.{png,jpeg,jpg,gif,svg}", ["img"]);
@@ -33,9 +34,14 @@ gulp.task("html", function() {
         .pipe(gulp.dest(developmentDir));
 });
 
-gulp.task("css", function() {
+gulp.task("scss", function() {
     return gulp.src(workingDir + '/scss/**/*.scss')
         .pipe(plugins.sass().on('error', plugins.sass.logError))
+        .pipe(gulp.dest(developmentDir + "/resources/css"));
+});
+
+gulp.task("css", function() {
+    return gulp.src(workingDir + '/css/**/*.css')
         .pipe(gulp.dest(developmentDir + "/resources/css"));
 });
 
@@ -68,6 +74,6 @@ gulp.task('bower', function() {
 });
 
 
-gulp.task('build', plugins.sequence("bower", ["copy", "css", "js", "scalajs", "html", "font"]));
-gulp.task('develop', plugins.sequence("bower", ["copy", "css", "js", "scalajs", "html", "font"], "preview", "watch"));
+gulp.task('build', plugins.sequence("bower", ["copy", "css", "scss", "js", "scalajs", "html", "font"]));
+gulp.task('develop', plugins.sequence("bower", ["copy", "css", "scss", "js", "scalajs", "html", "font"], "preview", "watch"));
 gulp.task('default', ['build']);
