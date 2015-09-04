@@ -64,7 +64,7 @@ gulp.task('bower', function() {
     return plugins.bower('bower_components')
         .pipe(bowerFilter)
         .pipe(plugins.rename({dirname: ''}))
-        .pipe(gulp.dest(workingDir + '/lib'));
+        .pipe(gulp.dest(developmentDir + '/resources/js/lib'));
 });
 
 
