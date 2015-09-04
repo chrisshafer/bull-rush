@@ -24,7 +24,10 @@ object MainRouter {
       BullRushApp.mainRouter = Option(c)
       <.div(
         <.div(
-          ^.className := "primary-view nav-visible",
+            ^.className := "sidebar-menu"
+        ),
+        <.div(
+          ^.className := "master-container",
           <.div(
             r.render()
           )

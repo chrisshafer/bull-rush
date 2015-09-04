@@ -1,5 +1,18 @@
 @import "colors";
+@import "menu";
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
 
 body{
   background-color: $background;
+  font-family: 'Open Sans', sans-serif;
+  color: $body-font;
+}
+
+.row{
+  max-width: 82.5em;
+}
+
+.master-container{
+  margin-left: $menu-width;
 }
