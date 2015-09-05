@@ -26,6 +26,7 @@ object MainRouter {
         <.div(
             ^.className := "sidebar-menu",
             <.ul(
+              <.li(<.img( ^.src := "/resources/img/bull-smal.png")),
               <.li(<.i(^.className := "fa fa-usd fa-lg")),
               <.li(<.i(^.className := "fa fa-line-chart fa-lg")),
               <.li(<.i(^.className := "fa fa-cog fa-lg"))

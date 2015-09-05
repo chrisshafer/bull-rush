@@ -55,6 +55,11 @@ gulp.task("scalajs", function() {
         .pipe(gulp.dest(developmentDir + "/resources/js"));
 });
 
+gulp.task("image", function() {
+    return gulp.src([workingDir + '/img/**/*.*'])
+        .pipe(gulp.dest(developmentDir + "/resources/img"));
+});
+
 gulp.task("font", function() {
     return gulp.src(['**/*.woff','**/*.ttf','**/*.woff2'])
         .pipe(plugins.rename({dirname: ''}))
@@ -74,6 +79,6 @@ gulp.task('bower', function() {
 });
 
 
-gulp.task('build', plugins.sequence("bower", ["copy", "css", "scss", "js", "scalajs", "html", "font"]));
-gulp.task('develop', plugins.sequence("bower", ["copy", "css", "scss", "js", "scalajs", "html", "font"], "preview", "watch"));
+gulp.task('build', plugins.sequence("bower", ["copy", "css", "scss", "js", "scalajs", "html", "font", "image"]));
+gulp.task('develop', plugins.sequence("bower", ["copy", "css", "scss", "js", "scalajs", "html", "font", "image"], "preview", "watch"));
 gulp.task('default', ['build']);
