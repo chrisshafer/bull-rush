@@ -5,14 +5,36 @@
   height: 200px;
   background: $card-background;
   border-radius: 5px;
-  padding: 20px;
+  padding: 10px 0px 10px 0px;
+  display: block;
   @include noselect;
   .ticker{
     font-size: 25px;
     font-weight: bold;
+    margin-bottom: -10px;
+    display: block;
+  }
+  .company-name{
+    font-size: 14px;
+    padding-bottom: 5px;
   }
   .details{
-
+    font-size: 14px;
+    .detail-key{
+      font-weight: 600;
+      float: left;
+    }
+    .detail-value{
+      float: right;
+    }
+  }
+  .price{
+    display: block;
+    text-align: center;
+  }
+  .change{
+    display: block;
+    text-align: center;
   }
   .indicators{
 

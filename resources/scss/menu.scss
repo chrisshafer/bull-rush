@@ -23,7 +23,9 @@ $menu-width: 60px;
       }
       &:hover{
         color: #ffffff;
-        background-color: #65CDBA;
+      }
+      &:active{
+        
       }
       &.current{
         color: #ffffff;

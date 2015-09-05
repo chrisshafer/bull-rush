@@ -23,24 +23,27 @@ object TickerGrid {
   }
 
   def detail (key: String, value: String) = {<.div( ^.className := "row",
-    <.span( ^.className := "detail", key + " : " + value)
+    <.span( ^.className := "detail",
+      <.span( ^.className := "detail-key", key ),
+      <.span( ^.className := "detail-value", value ))
   )
   }
 
   def tickerCard(ticker: TickerDetails) ={
     <.li(
       <.div(^.className := "ticker-card",
-        <.div( ^.className := "small-6 columns",
-          <.span( ^.className := "ticker", ticker.stats.ticker),
+        <.div( ^.className := "small-8 medium-6 columns",
+          <.span( ^.className := "row ticker", ticker.stats.ticker.get),
+          <.span( ^.className := "row company-name", ticker.stats.name.get.replace("Common Stock","")),
           <.div( ^.className := "details",
-            detail("50 Day Avg.", ticker.stats.fiftyDayMovingAverage.get.toString),
-            detail("Year High", ticker.HighLow.yearHigh.get.toString),
-            detail("Year Low", ticker.HighLow.yearLow.get.toString)
+            detail("50 Day Avg", ticker.stats.fiftyDayMovingAverage.get.toString),
+            detail("52 week", ticker.HighLow.yearLow.get.toString +" - "+ticker.HighLow.yearHigh.get.toString)
           )
         ),
-        <.div( ^.className := "small-6 columns",
+        <.div( ^.className := "small-4 medium-6 columns",
           <.span( ^.className := "price row", ticker.stats.lastPrice.get),
-          <.span( ^.className := "change row", ticker.stats.change.get)
+          <.span( ^.className := "change row", ticker.stats.change.get),
+          <.span( ^.className := "change row", ticker.stats.percentChange.get)
         )
       )
     )
