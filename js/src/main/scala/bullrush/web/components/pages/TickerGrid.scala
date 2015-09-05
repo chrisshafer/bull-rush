@@ -26,7 +26,16 @@ object TickerGrid {
     <.span( ^.className := "detail",
       <.span( ^.className := "detail-key", key ),
       <.span( ^.className := "detail-value", value ))
-  )
+    )
+  }
+  def priceComponent (price: Double, change: Double, percentChange: String) ={
+    <.div( ^.className := "price-display",
+      <.span(^.className := "up-indicator"),
+      <.span( ^.className := "price row", price),
+      <.span( ^.className := "change row", change),
+      <.span( ^.className := "change row", percentChange),
+      <.span(^.className := "down-indicator")
+    )
   }
 
   def tickerCard(ticker: TickerDetails) ={
@@ -41,9 +50,7 @@ object TickerGrid {
           )
         ),
         <.div( ^.className := "small-4 medium-6 columns",
-          <.span( ^.className := "price row", ticker.stats.lastPrice.get),
-          <.span( ^.className := "change row", ticker.stats.change.get),
-          <.span( ^.className := "change row", ticker.stats.percentChange.get)
+          priceComponent(ticker.stats.lastPrice.get,ticker.stats.change.get,ticker.stats.percentChange.get)
         )
       )
     )

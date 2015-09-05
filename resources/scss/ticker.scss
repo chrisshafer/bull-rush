@@ -1,8 +1,9 @@
 @import "colors";
 @import "mixins";
 
+$card-height:200px;
 .ticker-card{
-  height: 200px;
+  height: $card-height;
   background: $card-background;
   border-radius: 5px;
   padding: 10px 0px 10px 0px;
@@ -28,15 +29,19 @@
       float: right;
     }
   }
-  .price{
-    display: block;
-    text-align: center;
-  }
-  .change{
-    display: block;
-    text-align: center;
-  }
-  .indicators{
-
+  .price-display {
+    width: 100%;
+    height: $card-height - 20;
+    padding: 20px 0px 20px 0px;
+    font-weight: 600;
+    .price {
+      font-size: 16px;
+      display: block;
+      text-align: center;
+    }
+    .change {
+      display: block;
+      text-align: center;
+    }
   }
 }
