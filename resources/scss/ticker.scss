@@ -1,0 +1,20 @@
+@import "colors";
+@import "mixins";
+
+.ticker-card{
+  height: 200px;
+  background: $card-background;
+  border-radius: 5px;
+  padding: 20px;
+  @include noselect;
+  .ticker{
+    font-size: 25px;
+    font-weight: bold;
+  }
+  .details{
+
+  }
+  .indicators{
+
+  }
+}

@@ -2,6 +2,7 @@ package bullrush.web.actions
 
 
 import bullrush.model.TickerMessage
+import bullrush.web.dispatchers.TickerDispatcher
 import bullrush.web.util.TickerSocket
 
 object TickerActions {
@@ -16,7 +17,7 @@ object TickerActions {
 
   private def receive(message: TickerMessage): Unit ={
     if(message.tickerDetail.isDefined){
-      println(message.tickerDetail.get.stats.lastPrice.get)
+      TickerDispatcher.dispatch(ReceiveTickerUpdate(message.tickerDetail.get))
     }
   }
 

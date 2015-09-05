@@ -24,7 +24,12 @@ object MainRouter {
       BullRushApp.mainRouter = Option(c)
       <.div(
         <.div(
-            ^.className := "sidebar-menu"
+            ^.className := "sidebar-menu",
+            <.ul(
+              <.li(<.i(^.className := "fa fa-usd fa-lg")),
+              <.li(<.i(^.className := "fa fa-line-chart fa-lg")),
+              <.li(<.i(^.className := "fa fa-cog fa-lg"))
+            )
         ),
         <.div(
           ^.className := "master-container",

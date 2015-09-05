@@ -70,7 +70,7 @@ gulp.task('bower', function() {
     return plugins.bower('bower_components')
         .pipe(bowerFilter)
         .pipe(plugins.rename({dirname: ''}))
-        .pipe(gulp.dest(developmentDir + '/resources/js/lib'));
+        .pipe(gulp.dest(developmentDir + '/resources/lib'));
 });
 
 
