@@ -14,13 +14,22 @@ $card-height:200px;
     font-weight: bold;
     margin-bottom: -10px;
     display: block;
+    white-space: nowrap;
+
   }
   .company-name{
     font-size: 14px;
     padding-bottom: 5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
   }
   .details{
     font-size: 14px;
+    min-width: 175px;
+    max-width: 250px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     .detail-key{
       font-weight: 600;
       float: left;
@@ -35,13 +44,36 @@ $card-height:200px;
     padding: 20px 0px 20px 0px;
     font-weight: 600;
     .price {
-      font-size: 16px;
+      &.negative{
+        color: $negative;
+      }
+      &.positive{
+        color: $positive;
+      }
+      font-weight: 600;
+      font-size: 30px;
       display: block;
       text-align: center;
     }
     .change {
+      &.negative{
+        color: $negative;
+      }
+      &.positive{
+        color: $positive;
+      }
+      font-size: 20px;
       display: block;
       text-align: center;
     }
+  }
+  &.positive{
+    border-left: 5px solid $positive;
+  }
+  &.negative{
+    border-left: 5px solid $negative;
+  }
+  &.no-change{
+    border-left: 5px solid $no-change;
   }
 }
