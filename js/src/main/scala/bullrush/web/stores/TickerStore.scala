@@ -15,6 +15,7 @@ object TickerStore extends ChangeEventEmitter{
   private val tickers : scala.collection.mutable.Map[String,TickerDetails] = scala.collection.mutable.Map()
 
   def getTickers = tickers.values.toSeq
+  def getTicker(symbol: String) = tickers(symbol.toUpperCase)
 
   val dispatchId = TickerDispatcher.register({
     case ReceiveTickerUpdate(ticker) =>
