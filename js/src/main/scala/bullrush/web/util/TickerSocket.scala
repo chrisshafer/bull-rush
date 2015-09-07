@@ -32,7 +32,6 @@ class TickerSocket(url: String, handler: (TickerMessage) => (Unit)) {
   def send(message: TickerMessage) = {
     websocket.readyState match {
       case OPEN =>
-        println("SENDING : "+write(message))
         websocket.send(write(message))
       case CONNECTING =>
         messageQueue = messageQueue :+ message

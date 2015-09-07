@@ -23,7 +23,6 @@ class RouterActor extends Actor {
 
     case UpdateClients(details, torecieve) =>
       val message = TickerMessage("",202,Some(details),None)
-      println("Sending to : "+clients.filterKeys(torecieve))
       clients.filterKeys(torecieve).foreach(_._2.send(write(message),sender))
 
     case msg: TickerMessage =>

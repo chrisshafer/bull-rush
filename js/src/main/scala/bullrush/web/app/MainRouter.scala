@@ -1,5 +1,6 @@
 package bullrush.web.app
 
+import bullrush.web.components.SideNav
 import bullrush.web.components.pages.{SingleTicker, TickerGrid}
 import japgolly.scalajs.react.extra.router2.{Redirect, Resolution, RouterConfigDsl, RouterCtl}
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -26,19 +27,14 @@ object MainRouter {
 
     }
 
+    def navigation()={
+
+    }
 
     def layout(c: RouterCtl[MainPages], r: Resolution[MainPages]) = {
       BullRushApp.mainRouter = Option(c)
       <.div(
-        <.div(
-            ^.className := "sidebar-menu",
-            <.ul(
-              <.li(<.img( ^.src := "/resources/img/bull-smal.png")),
-              <.li(<.i(^.className := "fa fa-usd fa-lg")),
-              <.li(<.i(^.className := "fa fa-line-chart fa-lg")),
-              <.li(<.i(^.className := "fa fa-cog fa-lg"))
-            )
-        ),
+        SideNav.component(SideNav.Props(Some(c))),
         <.div(
           ^.className := "master-container",
           <.div(
