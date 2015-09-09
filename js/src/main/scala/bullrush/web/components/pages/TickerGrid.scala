@@ -1,6 +1,7 @@
 package bullrush.web.components.pages
 
 import bullrush.model.TickerDetails
+import bullrush.web.actions.NavStateActions
 import bullrush.web.stores.TickerStore
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactNode, BackendScope, ReactComponentB}
@@ -10,6 +11,7 @@ object TickerGrid {
   class Backend($: BackendScope[Unit, State]){
 
     def onLoad() = {
+      NavStateActions.setCurrentPage("TickerGridPage")
       TickerStore.addChangeListener( () => onTickerChange())
     }
 

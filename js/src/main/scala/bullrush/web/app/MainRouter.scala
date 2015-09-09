@@ -1,5 +1,6 @@
 package bullrush.web.app
 
+import bullrush.web.actions.NavStateActions
 import bullrush.web.components.SideNav
 import bullrush.web.components.pages.{SingleTicker, TickerGrid}
 import japgolly.scalajs.react.extra.router2.{Redirect, Resolution, RouterConfigDsl, RouterCtl}
@@ -17,17 +18,17 @@ object MainRouter {
     val router = RouterConfigDsl[MainPages].buildConfig { dsl =>
       import dsl._
       (trimSlashes
-        | staticRoute(root, TickerGridPage) ~> render(TickerGrid.component())
+        | staticRoute(root, TickerGridPage) ~> {
+            render(TickerGrid.component())
+        }
         | dynamicRouteCT("#ticker" / string("[A-Za-z0-9-]{1,25}").caseClass[SingleTickerPage]) ~> {
             dynRender(SingleTicker.component(_))
         }
-        | staticRoute("#404", NotFoundPage) ~> render(<.div("TODO"))
+        | staticRoute("#404", NotFoundPage) ~> {
+            render(<.div("TODO"))
+        }
         ).notFound(redirectToPage(TickerGridPage)(Redirect.Replace))
         .renderWith(layout)
-
-    }
-
-    def navigation()={
 
     }
 

@@ -1,6 +1,7 @@
 package bullrush.web.components.pages
 
 import bullrush.model.TickerDetails
+import bullrush.web.actions.NavStateActions
 import bullrush.web.app.MainRouter.SingleTickerPage
 import bullrush.web.stores.TickerStore
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -11,6 +12,7 @@ object SingleTicker {
   class Backend($: BackendScope[SingleTickerPage, State]){
 
     def onLoad() = {
+      NavStateActions.setCurrentPage("SingleTickerPage")
       TickerStore.addChangeListener( () => onTickerChange())
     }
 
