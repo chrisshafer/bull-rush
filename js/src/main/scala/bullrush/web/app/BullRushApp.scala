@@ -16,7 +16,7 @@ object BullRushApp extends JSApp {
 
   def main(): Unit ={
 
-    Seq("SPWR","SUNE","MSFT","ALU","FSLR","SCTY","MON").map(TickerActions.subscribeToTicker)
+    Seq("^IXIC","^GSPC","SPWR","SUNE","MSFT","ALU","FSLR","SCTY","MON").map(TickerActions.subscribeToTicker)
     val router = Router(BaseUrl.fromWindowOrigin,MainPages.router)
     router() render document.body
   }

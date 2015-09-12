@@ -3,6 +3,7 @@ package bullrush.web.app
 import bullrush.web.actions.NavStateActions
 import bullrush.web.components.SideNav
 import bullrush.web.components.pages.{SingleTicker, TickerGrid}
+import bullrush.web.components.reusable.DetailHeader
 import japgolly.scalajs.react.extra.router2.{Redirect, Resolution, RouterConfigDsl, RouterCtl}
 import japgolly.scalajs.react.vdom.prefix_<^._
 object MainRouter {
@@ -39,6 +40,7 @@ object MainRouter {
         <.div(
           ^.className := "master-container",
           <.div(
+            DetailHeader.component(),
             r.render()
           )
         )

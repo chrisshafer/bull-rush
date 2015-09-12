@@ -53,7 +53,7 @@ class RouterPublisher(router: ActorRef, id: String) extends ActorPublisher[Strin
 import scala.collection.mutable
 
   private val queue = mutable.Queue[String]()
-  val MaxBufferSize = 100
+  val MaxBufferSize = 500
   var queueUpdated = false
 
   override def preStart(): Unit = router ! AddClient(ActorRefRoutee(self),id)
@@ -64,7 +64,6 @@ import scala.collection.mutable
     case message: String  =>
       if (queue.size == MaxBufferSize) {
         queue.dequeue()
-        println("Oh noes ! Buffer full !")
       }
       queue += message
       if (!queueUpdated) {

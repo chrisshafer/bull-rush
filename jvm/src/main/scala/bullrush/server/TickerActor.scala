@@ -74,7 +74,7 @@ class TickerActor(router: ActorRef) extends Actor{
       }
     }
 
-    context.system.scheduler.scheduleOnce(1 second) {
+    context.system.scheduler.scheduleOnce(2 seconds) {
       self ! UpdateTickers
     }
   }

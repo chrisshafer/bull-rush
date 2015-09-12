@@ -14,8 +14,21 @@ object TickerStore extends ChangeEventEmitter{
 
   private val tickers : scala.collection.mutable.Map[String,TickerDetails] = scala.collection.mutable.Map()
 
+  // TODO move out to utilities
+  def average[T]( ts: Iterable[T] )( implicit num: Numeric[T] ) = {
+    num.toDouble( ts.sum ) / ts.size
+  }
+  implicit def iterebleWithAvg[T:Numeric](data:Iterable[T]) = new {
+    def avg = average(data)
+  }
+
   def getTickers = tickers.values.toSeq
   def getTicker(symbol: String) = tickers(symbol.toUpperCase)
+  def getDailyChange = tickers.values.map(_.stats.change).flatten.sum
+  def getDailyPercentChange = {
+    val changes = tickers.values.map(_.stats.percentChange.getOrElse("0").replace("%","").toDouble).toIterable
+    changes.avg
+  }
 
   val dispatchId = TickerDispatcher.register({
     case ReceiveTickerUpdate(ticker) =>
