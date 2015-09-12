@@ -20,34 +20,46 @@ object DetailHeader {
     def onTickerChange() = {
       if($.isMounted()){
         val filtered = TickerStore.getTickers.filter( ticker => indexSymbols.contains(ticker.stats.ticker.getOrElse("")) )
-        $.modState(_.copy(indexes = filtered))
+        $.modState(_.copy(indexes = filtered, dailyPercentage = TickerStore.getDailyPercentChange))
       }
     }
 
   }
   val curFmt = "%.2f"
 
+  def toIndicatedPercent(change: Double): String ={
+    val indicator : String = if(change < 0) "-" else if(change > 0) "+" else ""
+    indicator+change.formatted("%.2f")+"%"
+  }
   def getShortName(ticker: String): String = {
     val mapping = Map( "^IXIC" -> "Nasdaq" , "^GSPC" -> "S&P 500" )
     if(mapping.contains(ticker)){
       mapping(ticker)
     } else ticker
   }
-  def tickerChange(ticker: TickerDetails) = {
-    val change: Double = ticker.stats.change.getOrElse(0)
+  def stat(name: String, change: Double, percentChange: String) = {
     val color : String = if(change < 0) "negative" else if(change > 0) "positive" else ""
     <.div(
-      <.span( ^.className := "index-short", getShortName(ticker.stats.ticker.getOrElse(""))),
-      <.span( ^.className := "index-change "+color, ticker.stats.percentChange)
+      <.span( ^.className := "index-short",name),
+      <.span( ^.className := "index-change "+color,percentChange)
     )
   }
+  def tickerChange(ticker: TickerDetails) = {
+    val change: Double = ticker.stats.change.getOrElse(0)
+    stat(getShortName(ticker.stats.ticker.getOrElse("")),
+      ticker.stats.change.getOrElse(0),
+      ticker.stats.percentChange.getOrElse("0.0%"))
+  }
   val component = ReactComponentB[Unit]("DetailHeader")
-    .initialState(new State(Seq(), 0, 0))
+    .initialState(new State(TickerStore.getTickers, 0, TickerStore.getDailyPercentChange))
     .backend(new Backend(_))
     .render { (_, S, B) =>
 
       <.div( ^.className := "detail-header",
-        <.div( ^.className := "stats",S.indexes.map(tickerChange)),
+        <.div( ^.className := "stats",
+          S.indexes.map(tickerChange),
+          stat("Watching",S.dailyPercentage,toIndicatedPercent(S.dailyPercentage))
+        ),
         <.div( ^.className := "controls")
       )
 

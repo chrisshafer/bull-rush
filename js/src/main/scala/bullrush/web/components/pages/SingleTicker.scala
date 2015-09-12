@@ -13,6 +13,7 @@ object SingleTicker {
 
     def onLoad() = {
       NavStateActions.setCurrentPage("SingleTickerPage")
+      $.modState(_.copy(ticker = Option(TickerStore.getTicker($.props.symbol))))
       TickerStore.addChangeListener( () => onTickerChange())
     }
 

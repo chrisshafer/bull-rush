@@ -67,7 +67,7 @@ object TickerGrid {
     )
   }
   val component = ReactComponentB[Unit]("TickerGrid")
-    .initialState(new State(Seq()))
+    .initialState(new State(TickerStore.getTickers))
     .backend(new Backend(_))
     .render { (_, S, B) =>
       <.ul(
