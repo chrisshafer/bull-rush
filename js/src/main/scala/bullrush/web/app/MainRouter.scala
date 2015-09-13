@@ -2,7 +2,7 @@ package bullrush.web.app
 
 import bullrush.web.actions.NavStateActions
 import bullrush.web.components.SideNav
-import bullrush.web.components.pages.{SingleTicker, TickerGrid}
+import bullrush.web.components.pages.{TickerTable, SingleTicker, TickerGrid}
 import bullrush.web.components.reusable.DetailHeader
 import japgolly.scalajs.react.extra.router2.{Redirect, Resolution, RouterConfigDsl, RouterCtl}
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -20,7 +20,7 @@ object MainRouter {
       import dsl._
       (trimSlashes
         | staticRoute(root, TickerGridPage) ~> {
-            render(TickerGrid.component())
+            render(TickerTable.component())
         }
         | dynamicRouteCT("#ticker" / string("[A-Za-z0-9-]{1,25}").caseClass[SingleTickerPage]) ~> {
             dynRender(SingleTicker.component(_))

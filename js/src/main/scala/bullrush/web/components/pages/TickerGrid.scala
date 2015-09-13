@@ -26,7 +26,6 @@ object TickerGrid {
 
 
   def details(ticker: TickerDetails): ReactNode = {
-
     <.div( ^.className := "details",
       detail("50 Day Avg", ticker.stats.fiftyDayMovingAverage.getOrElse(" - ").toString),
       detail("52 week", ticker.HighLow.yearLow.get.formatted(curFmt) +" - "+ticker.HighLow.yearHigh.get.formatted(curFmt)),

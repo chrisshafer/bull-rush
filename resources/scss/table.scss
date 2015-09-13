@@ -1,0 +1,43 @@
+@import "colors";
+@import "mixins";
+.table-responsive{
+  margin: 0px -20px;
+  overflow: auto;
+  padding: 5px 10px 5px 20px;
+  table{
+    border-spacing: 0;
+    border: 0;
+    background-color: transparent;
+    min-width: 100%;
+    thead{
+      border-radius: 5px;
+      tr {
+        th {
+          padding: 5px 1px 5px 1px;
+          text-transform: capitalize;
+          border-bottom: 1px solid #232323;
+
+        }
+      }
+    }
+    tbody {
+      tr{
+        td{
+          &.negative{
+            color: $negative;
+          }
+          &.positive{
+            color: $positive;
+          }
+          padding: 5px 1px 5px 1px;
+          text-align: center;
+          border-bottom: 1px solid #232323;
+          background-color: transparent;
+        }
+        background-color: transparent;
+      }
+      background-color: transparent;
+    }
+  }
+
+}
