@@ -37,7 +37,12 @@ lazy val bullRush = crossProject.in(file(".")).
         "io.spray"            %%  "spray-json"    % sprayV,
         "com.typesafe.akka"   %% "akka-stream-experimental"    % akkaStreamsV,
         "com.typesafe.akka"   %% "akka-http-core-experimental" % akkaStreamsV,
-        "org.scalatest"              %% "scalatest"            % "2.2.4"  % "test"
+        "org.scalatest"       %% "scalatest"      % "2.2.4"  % "test",
+        // Slick
+        "com.typesafe.slick"  %% "slick" % "3.0.0",
+        "com.zaxxer" % "HikariCP" % "2.4.1",
+        "org.slf4j" % "slf4j-nop" % "1.6.4",
+        "org.postgresql" % "postgresql" % "9.4-1201-jdbc41"
       )
     }
   ).
